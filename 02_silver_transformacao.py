@@ -1,18 +1,18 @@
 # Databricks notebook source
+# /// script
+# [tool.databricks.environment]
+# environment_version = "6"
+# ///
 # MAGIC %md
 # MAGIC # 02 - Silver: Limpeza e padronização
 # MAGIC
 # MAGIC Objetivo desta camada: pegar as tabelas Bronze (dado bruto, sem alteração)
 # MAGIC e aplicar tipagem correta, remoção de duplicatas, tratamento de nulos e
-# MAGIC padronização de texto. Nenhuma agregação de negócio acontece aqui —
-# MAGIC isso fica para a Gold.
+# MAGIC padronização de texto.
 # MAGIC
-# MAGIC Nomes de coluna conforme a documentação oficial do SES (`Documentacao_das_tabelas`).
+# MAGIC Nomes de coluna conforme a documentação oficial do SES ([Documentacao das tabelas](https://www2.susep.gov.br/menuestatistica/ses/principal.aspx))
 # MAGIC
-# MAGIC Escopo temporal do MVP: **apenas dados de 2022 em diante**. O filtro é
-# MAGIC aplicado explicitamente aqui (mesmo que o CSV de origem já tenha sido
-# MAGIC recortado antes do upload), para que a decisão de escopo fique
-# MAGIC documentada no próprio pipeline.
+# MAGIC Escopo temporal do MVP: **apenas dados de 2022 em diante**.
 # MAGIC
 # MAGIC Entrada (Bronze) -> Saída (Silver):
 # MAGIC - `bronze_ses_seguros`           -> `silver_ses_seguros` (fato principal, nacional)
@@ -44,10 +44,12 @@ spark.sql(f"CREATE SCHEMA IF NOT EXISTS {SCHEMA_SILVER}")
 # COMMAND ----------
 
 # MAGIC %md
-# MAGIC ### Função auxiliar de checagem de qualidade
-# MAGIC Roda antes e depois da limpeza de cada tabela, para você ter evidência
-# MAGIC (screenshot) do problema encontrado e do resultado do tratamento —
-# MAGIC isso alimenta o item "Qualidade de Dados" do documento final.
+# MAGIC ### Função auxiliares
+
+# COMMAND ----------
+
+def normalizar_codigo(nome_coluna: str):
+    return F.col(nome_coluna).cast("double").cast("long").cast("string")
 
 # COMMAND ----------
 
@@ -80,24 +82,22 @@ df_bronze_seguros = spark.table(f"{CATALOG}.{SCHEMA_BRONZE}.bronze_ses_seguros")
 checar_qualidade(df_bronze_seguros, "bronze_ses_seguros",
                   colunas_chave=["coenti", "coramo", "damesano"])
 
-# COMMAND ----------
-
 df_silver_seguros = (
     df_bronze_seguros
     # tipagem das chaves (string evita problema de join por tipo divergente)
-    .withColumn("coenti", F.col("coenti").cast("string"))
-    .withColumn("coramo", F.col("coramo").cast("string"))
-    .withColumn("cogrupo", F.col("cogrupo").cast("string"))
+    .withColumn("coenti", normalizar_codigo("coenti"))
+    .withColumn("coramo", normalizar_codigo("coramo"))
+    .withColumn("cogrupo", normalizar_codigo("cogrupo"))
     # damesano vem como AAAAMM (ex: 202201) -> converte para data (primeiro dia do mês)
     .withColumn("data_referencia", F.to_date(F.col("damesano").cast("string"), "yyyyMM"))
     # tipagem das métricas financeiras
-    .withColumn("premio_direto", F.col("premio_direto").cast("double"))
-    .withColumn("premio_de_seguros", F.col("premio_de_seguros").cast("double"))
-    .withColumn("premio_retido", F.col("premio_retido").cast("double"))
-    .withColumn("premio_ganho", F.col("premio_ganho").cast("double"))
-    .withColumn("sinistro_direto", F.col("sinistro_direto").cast("double"))
-    .withColumn("sinistro_retido", F.col("sinistro_retido").cast("double"))
-    .withColumn("desp_com", F.col("desp_com").cast("double"))
+    .withColumn("premio_direto", F.regexp_replace(F.col("premio_direto"), ",", ".").cast("double"))
+    .withColumn("premio_de_seguros", F.regexp_replace(F.col("premio_de_seguros"), ",", ".").cast("double"))
+    .withColumn("premio_retido", F.regexp_replace(F.col("premio_retido"), ",", ".").cast("double"))
+    .withColumn("premio_ganho", F.regexp_replace(F.col("premio_ganho"), ",", ".").cast("double"))
+    .withColumn("sinistro_direto", F.regexp_replace(F.col("sinistro_direto"), ",", ".").cast("double"))
+    .withColumn("sinistro_retido", F.regexp_replace(F.col("sinistro_retido"), ",", ".").cast("double"))
+    .withColumn("desp_com", F.regexp_replace(F.col("desp_com"), ",", ".").cast("double"))
     # escopo temporal do MVP
     .filter(F.col("data_referencia") >= F.lit(DATA_INICIO_ESCOPO))
     # remoção de duplicatas pela chave natural do fato
@@ -124,9 +124,6 @@ df_silver_seguros.write.format("delta").mode("overwrite") \
 # MAGIC
 # MAGIC Colunas de origem: `coenti`, `damesano`, `ramos`, `UF`, `premio_dir`,
 # MAGIC `premio_ret`, `sin_dir`, `prem_ret_liq`, `gracodigo`, `salvados`, `recuperacao`.
-# MAGIC
-# MAGIC Renomeio `ramos` -> `coramo` para manter o mesmo nome de chave usado no
-# MAGIC fato principal e nas dimensões, facilitando os joins na Gold.
 
 # COMMAND ----------
 
@@ -135,23 +132,21 @@ df_bronze_uf = spark.table(f"{CATALOG}.{SCHEMA_BRONZE}.bronze_ses_uf")
 checar_qualidade(df_bronze_uf, "bronze_ses_uf",
                   colunas_chave=["coenti", "ramos", "UF", "damesano"])
 
-# COMMAND ----------
-
 df_silver_uf = (
     df_bronze_uf
     .withColumnRenamed("ramos", "coramo")
     .withColumnRenamed("UF", "uf")
-    .withColumn("coenti", F.col("coenti").cast("string"))
-    .withColumn("coramo", F.col("coramo").cast("string"))
+    .withColumn("coenti", normalizar_codigo("coenti"))
+    .withColumn("coramo", normalizar_codigo("coramo"))
+    .withColumn("gracodigo", normalizar_codigo("gracodigo"))
     .withColumn("uf", F.trim(F.upper(F.col("uf"))))
-    .withColumn("gracodigo", F.col("gracodigo").cast("string"))
     .withColumn("data_referencia", F.to_date(F.col("damesano").cast("string"), "yyyyMM"))
-    .withColumn("premio_dir", F.col("premio_dir").cast("double"))
-    .withColumn("premio_ret", F.col("premio_ret").cast("double"))
-    .withColumn("sin_dir", F.col("sin_dir").cast("double"))
-    .withColumn("prem_ret_liq", F.col("prem_ret_liq").cast("double"))
-    .withColumn("salvados", F.col("salvados").cast("double"))
-    .withColumn("recuperacao", F.col("recuperacao").cast("double"))
+    .withColumn("premio_dir", F.regexp_replace(F.col("premio_dir"), ",", ".").cast("double"))
+    .withColumn("premio_ret", F.regexp_replace(F.col("premio_ret"), ",", ".").cast("double"))
+    .withColumn("sin_dir", F.regexp_replace(F.col("sin_dir"), ",", ".").cast("double"))
+    .withColumn("prem_ret_liq", F.regexp_replace(F.col("prem_ret_liq"), ",", ".").cast("double"))
+    .withColumn("salvados", F.regexp_replace(F.col("salvados"), ",", ".").cast("double"))
+    .withColumn("recuperacao", F.regexp_replace(F.col("recuperacao"), ",", ".").cast("double"))
     .filter(F.col("data_referencia") >= F.lit(DATA_INICIO_ESCOPO))
     .dropDuplicates(["coenti", "coramo", "uf", "data_referencia"])
     .filter(F.col("uf").isNotNull())
@@ -169,11 +164,7 @@ df_silver_uf.write.format("delta").mode("overwrite") \
 # COMMAND ----------
 
 # MAGIC %md
-# MAGIC ## 3. Dimensões simples (chave estática)
-# MAGIC
-# MAGIC `Ses_ramos` e `ses_gruposramos` têm uma chave fixa (não variam por mês),
-# MAGIC então seguem o mesmo padrão: renomear, padronizar texto, remover
-# MAGIC duplicatas pela chave.
+# MAGIC ## 3. Dimensões simples
 
 # COMMAND ----------
 
@@ -197,18 +188,18 @@ def limpar_dimensao_simples(nome_tabela_bronze: str, nome_tabela_silver: str,
 
     df_silver = (
         df
-        .withColumn(coluna_chave, F.col(coluna_chave).cast("string"))
+        .withColumn(coluna_chave, normalizar_codigo(coluna_chave))
         .dropDuplicates([coluna_chave])
         .filter(F.col(coluna_chave).isNotNull())
         .drop("_data_ingestao", "_arquivo_origem")
         .withColumn("_data_processamento", F.current_timestamp())
     )
-
+ 
     checar_qualidade(df_silver, f"{nome_tabela_silver} (pós-limpeza)", colunas_chave=[coluna_chave])
-
+ 
     df_silver.write.format("delta").mode("overwrite") \
         .saveAsTable(f"{CATALOG}.{SCHEMA_SILVER}.{nome_tabela_silver}")
-
+ 
     return df_silver
 
 # COMMAND ----------
@@ -237,11 +228,6 @@ df_silver_gruposramos = limpar_dimensao_simples(
 # MAGIC ## 4. Dimensão empresa: `Ses_cias`
 # MAGIC
 # MAGIC Colunas: `coenti` (PK), `noenti`, `cogrupo`, `nogrupo`.
-# MAGIC
-# MAGIC A documentação do SES avisa que `cogrupo`/`nogrupo` **ainda não estão
-# MAGIC disponíveis** de forma confiável nesta tabela — por isso guardamos aqui
-# MAGIC apenas nome/código da empresa, e o grupo econômico correto vem de
-# MAGIC `silver_ses_grupos_economicos` (que é histórico por mês).
 
 # COMMAND ----------
 
@@ -251,7 +237,7 @@ checar_qualidade(df_bronze_cias, "bronze_ses_cias", colunas_chave=["coenti"])
 
 df_silver_cias = (
     df_bronze_cias
-    .withColumn("coenti", F.col("coenti").cast("string"))
+    .withColumn("coenti", normalizar_codigo("coenti"))
     .withColumn("noenti", F.trim(F.upper(F.col("noenti"))))
     .select("coenti", "noenti")  # descarta cogrupo/nogrupo não confiáveis desta tabela
     .dropDuplicates(["coenti"])
@@ -270,8 +256,6 @@ df_silver_cias.write.format("delta").mode("overwrite") \
 # MAGIC ## 5. Dimensão histórica: `Ses_grupos_economicos`
 # MAGIC
 # MAGIC Colunas: `damesano`, `coenti`, `noenti`, `cogrupo`, `nogrupo`.
-# MAGIC Chave composta (`coenti` + `data_referencia`), pois uma empresa pode
-# MAGIC mudar de grupo econômico de um mês para o outro (SCD Tipo 2 natural).
 
 # COMMAND ----------
 
@@ -282,11 +266,11 @@ checar_qualidade(df_bronze_grupos_economicos, "bronze_ses_grupos_economicos",
 
 df_silver_grupos_economicos = (
     df_bronze_grupos_economicos
-    .withColumn("coenti", F.col("coenti").cast("string"))
-    .withColumn("cogrupo", F.col("cogrupo").cast("string"))
+    .withColumn("coenti", normalizar_codigo("coenti"))
+    .withColumn("cogrupo", normalizar_codigo("cogrupo"))
     .withColumn("noenti", F.trim(F.upper(F.col("noenti"))))
     .withColumn("nogrupo", F.trim(F.upper(F.col("nogrupo"))))
-    .withColumn("data_referencia", F.to_date(F.col("damesano").cast("string"), "yyyyMM"))
+    .withColumn("data_referencia", F.try_to_date(F.col("damesano").cast("string"), "yyyyMM"))
     .filter(F.col("data_referencia") >= F.lit(DATA_INICIO_ESCOPO))
     .dropDuplicates(["coenti", "data_referencia"])
     .filter(F.col("coenti").isNotNull())
@@ -305,8 +289,6 @@ df_silver_grupos_economicos.write.format("delta").mode("overwrite") \
 
 # MAGIC %md
 # MAGIC ### Checagem de integridade referencial
-# MAGIC Confere se todo código de ramo/empresa que aparece nos fatos realmente
-# MAGIC existe nas dimensões — evidência importante para o documento final.
 
 # COMMAND ----------
 
@@ -329,16 +311,3 @@ print(f"Códigos de grupo de ramo (UF) sem correspondência na dimensão: {graco
 
 if ramos_sem_match.count() > 0:
     ramos_sem_match.show(20, truncate=False)
-
-# COMMAND ----------
-
-# MAGIC %md
-# MAGIC ### Próximo passo
-# MAGIC Seguir para `03_gold_modelagem.py`, onde:
-# MAGIC - `silver_ses_seguros` (fato nacional) é cruzado com `silver_ses_cias`,
-# MAGIC   `silver_ses_ramos` e `silver_ses_grupos_economicos` para responder as
-# MAGIC   perguntas de volume de prêmios e sinistralidade por segmento
-# MAGIC - `silver_ses_uf` (fato geográfico) é cruzado com `silver_ses_gruposramos`
-# MAGIC   para a análise por UF
-# MAGIC - a sinistralidade é calculada (sinistro / prêmio ganho) já na Gold,
-# MAGIC   pronta para consumo

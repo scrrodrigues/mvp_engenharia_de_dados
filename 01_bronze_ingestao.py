@@ -1,9 +1,13 @@
 # Databricks notebook source
+# /// script
+# [tool.databricks.environment]
+# environment_version = "6"
+# ///
 # MAGIC %md
 # MAGIC # 01 - Bronze: Ingestão dos arquivos brutos do SES/SUSEP
 # MAGIC
 # MAGIC Objetivo desta camada: trazer cada arquivo exatamente como veio da fonte,
-# MAGIC sem limpeza ou transformação de conteúdo. Apenas leitura + metadados de controle.
+# MAGIC sem limpeza ou transformação de conteúdo. Apenas leitura e metadados de controle.
 # MAGIC
 # MAGIC Tabelas ingeridas:
 # MAGIC - `Ses_seguros.csv`            -> fato principal (prêmios, sinistros, despesas)
@@ -20,25 +24,8 @@ from pyspark.sql.utils import AnalysisException
 
 # COMMAND ----------
 
-# MAGIC %md ### Parâmetros
-
-# COMMAND ----------
-
-CATALOG = "mvp_susep_ses"
-SCHEMA_BRONZE = "bronze"
-VOLUME_PATH = f"/Volumes/{CATALOG}/{SCHEMA_BRONZE}/arquivos_raw"
-
-spark.sql(f"USE CATALOG {CATALOG}")
-spark.sql(f"USE SCHEMA {SCHEMA_BRONZE}")
-
-# COMMAND ----------
-
 # MAGIC %md
-# MAGIC ### Mapa dos arquivos a ingerir
-# MAGIC Ajuste `delimiter` e `encoding` conforme o formato real de cada arquivo
-# MAGIC baixado do portal SES (confira abrindo o .csv bruto antes de rodar).
-# MAGIC `header` e `inferSchema` valem para todos; se algum arquivo não tiver
-# MAGIC cabeçalho, ajuste esse dicionário.
+# MAGIC ### Mapa dos arquivos
 
 # COMMAND ----------
 
@@ -83,7 +70,7 @@ arquivos = [
 
 # COMMAND ----------
 
-# MAGIC %md ### Função genérica de ingestão Bronze
+# MAGIC %md ### Ingestão Bronze
 
 # COMMAND ----------
 
@@ -91,7 +78,6 @@ def ingerir_bronze(nome_arquivo: str, tabela_bronze: str, delimiter: str, encodi
     """
     Lê um arquivo bruto do Volume, adiciona metadados de controle
     (data de ingestão e fonte) e grava como tabela Delta na camada Bronze.
-    Nenhuma limpeza, renomeação ou filtro de conteúdo é aplicada aqui.
     """
     caminho_arquivo = f"{VOLUME_PATH}/{nome_arquivo}"
 
@@ -127,8 +113,15 @@ def ingerir_bronze(nome_arquivo: str, tabela_bronze: str, delimiter: str, encodi
 
 resultados = {}
 
+CATALOG = "mvp_susep_ses"
+SCHEMA_BRONZE = "bronze"
+VOLUME_PATH = f"/Volumes/{CATALOG}/{SCHEMA_BRONZE}/arquivos_raw"
+
+# Validação das tabelas
+
 for arq in arquivos:
     try:
+        spark.sql(f"DROP TABLE IF EXISTS {CATALOG}.{SCHEMA_BRONZE}.{arq['tabela_bronze']}")
         df = ingerir_bronze(
             nome_arquivo=arq["nome_arquivo"],
             tabela_bronze=arq["tabela_bronze"],
@@ -144,22 +137,10 @@ for arq in arquivos:
 # COMMAND ----------
 
 # MAGIC %md
-# MAGIC ### Checagem rápida (evidência para o documento final)
-# MAGIC Rode a célula abaixo e capture o print em screenshot para o item
-# MAGIC "Carga dos Dados (Etapa 4.2)" do documento de entrega.
+# MAGIC ### Visualizar Schema das Tabelas
 
 # COMMAND ----------
 
 for tabela in [a["tabela_bronze"] for a in arquivos]:
     print(f"\n--- {tabela} ---")
     spark.table(f"{CATALOG}.{SCHEMA_BRONZE}.{tabela}").printSchema()
-
-# COMMAND ----------
-
-# MAGIC %md
-# MAGIC ### Próximo passo
-# MAGIC Seguir para `02_silver_transformacao.py`, onde:
-# MAGIC - `bronze_ses_seguros` será tipado e limpo (fato principal)
-# MAGIC - `bronze_ses_cias`, `bronze_ses_ramos`, `bronze_ses_grupos_economicos`,
-# MAGIC   `bronze_ses_uf` e `bronze_ses_gruposramos` viram dimensões padronizadas
-# MAGIC   para montar o Esquema Estrela na Gold.
