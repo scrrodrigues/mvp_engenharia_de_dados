@@ -37,14 +37,17 @@ Os dados vêm do **SES (Sistema de Estatísticas da SUSEP)**, base pública mant
 - **Escopo temporal do MVP:** dados a partir de **janeiro de 2022**.
 - **Arquivos utilizados:**
 
+
 | Arquivo de origem | Papel no projeto |
 |---|---|
-| `Ses_seguros.csv` | Fato principal — prêmios, sinistros e despesas por empresa/ramo/mês |
-| `Ses_cias.csv` | Dimensão empresa |
-| `Ses_ramos.csv` | Dimensão ramo (segmento de seguro) |
-| `Ses_grupos_economicos.csv` | Dimensão histórica de grupo econômico (análise de concentração) |
-| `SES_UF2.csv` | Fato secundário — prêmios e sinistros por UF (análise geográfica) |
-| `ses_gruposramos.csv` | Dimensão de grupamento de ramos (complexidade adicional) |
+| [Ses_seguros.csv](./docs/Ses_seguros.csv) | Fato principal — prêmios, sinistros e despesas por empresa/ramo/mês |
+| [Ses_cias.csv](./docs/Ses_cias.csv) | Dimensão empresa |
+| [Ses_ramos.csv](./docs/Ses_ramos.csv) | Dimensão ramo (segmento de seguro) |
+| [Ses_grupos_economicos.csv](./docs/Ses_grupos_economicos.csv)  | Dimensão histórica de grupo econômico (análise de concentração) |
+| [SES_UF2.csv](./docs/SES_UF2.csv)  | Fato secundário — prêmios e sinistros por UF (análise geográfica) |
+| [ses_gruposramos.csv](./docs/ses_gruposramos.csv)  | Dimensão de grupamento de ramos (complexidade adicional) |
+
+**OBS: Foi necessária a redução dos registros dos arquivos `Ses_seguros.csv` e `SES_UF2.csv` para que os mesmos pudessem ser disponibilizados no repositório do GitHub.**
 
 ---
 
@@ -52,20 +55,26 @@ Os dados vêm do **SES (Sistema de Estatísticas da SUSEP)**, base pública mant
 
 ```
 mvp-susep-ses/
-├── README.md                     
-├── notebooks/
+├─── README.md                     
 │   ├── 01_bronze_ingestao.py
 │   ├── 02_silver_transformacao.py
 │   ├── 03_gold_modelagem.py
 │   ├── 04_qualidade_dados.py
 │   └── 05_analise_perguntas.py
 └── docs/
-    ├── catalogo_bronze.csv
     └── catalogo_gold.csv
+└── imagens/
+    └── modelagem_gold.png
+    └── extensao_geografica_uf.png
+    └── extensao_concentracao_grupo_economico.png
+    └── pergunta1_grafico_top_ramos.png
+    └── pergunta1_tabela_top_ramos.png
+    └── pergunta2_grafico_evolucao_sinistralidade.png
+    └── pergunta2_tabela_sinistralidade_periodo.png
+    └── pergunta3_grafico_cruzamento.png
+    └── pergunta3_tabela_cruzamento.png
 ```
 
-**Catálogo de dados completo (com linhagem Bronze → Gold, tipos e chaves):**
-[`docs/catalogo_gold.csv`](./docs/catalogo_gold.csv)
 
 ---
 
@@ -93,7 +102,6 @@ listando nome do arquivo, delimitador e encoding, e uma função genérica
 | `bronze_ses_uf` | 9.936.380 | 13 |
 | `bronze_ses_gruposramos` | 22 | 5 |
 
-📷 **[ingestão bronze]**
 
 ---
 
@@ -120,7 +128,6 @@ listando nome do arquivo, delimitador e encoding, e uma função genérica
 | `silver_ses_cias` | 769 | 769 |
 | `silver_ses_grupos_economicos` | 66.461 | 12.574 |
 
-📷 **[imagens_qualidade]**
 
 ### `03_gold_modelagem.py`
 
@@ -142,7 +149,9 @@ listando nome do arquivo, delimitador e encoding, e uma função genérica
 | `gold_concentracao_grupo_economico` | Analítica (Extensão) | 32 |
 | `gold_premios_sinistros_por_uf` | Analítica (Extensão) | 27 |
 
-**Catálogo de dados completo**, com descrição de cada campo, tipo de dado na Bronze, tipo de dado após conversão na Gold, chave (PK/FK) e a linhagem completa (de qual tabela/coluna Bronze cada coluna Gold se origina): [`docs/catalogo_gold.csv`](./docs/catalogo_gold.csv).
+**Catálogo de dados completo**, com descrição de cada campo, tipo de dado na Bronze, tipo de dado após conversão na Gold, chave (PK/FK) e a linhagem completa (de qual tabela/coluna Bronze cada coluna Gold se origina): [`Catálogo Gold.csv`](./docs/catalogo_gold.csv).
+
+**Modelo Entidade Relacionamento da Camada Gold** [`Modelagem Gold`](./imagens/modelagem_gold.png)
 
 ---
 
@@ -200,21 +209,26 @@ Durante o desenvolvimento, identificamos que os campos `sinistro_retido` e/ou `p
 **Automóvel - Casco (0531)** lidera com folga (~R$ 166 bilhões), quase o dobro do segundo colocado, **Prestamista (0977)** (~R$ 82,5 bilhões),
 seguido por **Vida em Grupo (0993)** e **R.C. Facultativa Veículos (0553)**. Resultado coerente com o mercado brasileiro de seguros, historicamente liderado pelo ramo Automóvel.
 
-📷 **[Espaço para imagem: gráfico "Top 15 ramos por volume de prêmios"]**
+<img src="imagens/pergunta1_tabela_top_ramos.png" alt="Tabela Top 15 ramos" width="800">
+
+<img src="imagens/pergunta1_grafico_top_ramos.png" alt="Gráfico Top 15 ramos" width="800">
+
 
 ### Pergunta secundária 2 — Como a sinistralidade evoluiu no período?
 
 A sinistralidade média aparece em 0% em todos os meses de 2022 a 2026 no gráfico — resultado direto da limitação de qualidade de dados descrita na seção 7 (campos zerados/nulos na fonte para a maioria dos registros). A resposta honesta a esta pergunta é que **não é possível concluir, com os dados disponíveis, se a sinistralidade subiu, caiu ou ficou estável** — essa é, em si, uma conclusão válida de qualidade de dados para o MVP.
 
-📷 **[Espaço para imagem: gráfico "Evolução da sinistralidade — mercado
-total"]**
+<img src="imagens/pergunta2_tabela_sinistralidade_periodo.png" alt="Tabela Sinistralidade por Período" width="800">
+
+<img src="imagens/pergunta2_grafico_evolucao_sinistralidade.png" alt="Gráfico Evolução da Sinistralidade" width="800">
 
 ### Pergunta secundária 3 — Crescimento de prêmio x variação de sinistralidade
 
 Pela mesma limitação, a variação de sinistralidade fica achatada em zero para praticamente todos os ramos, o que reduz a classificação a duas categorias efetivas (cresceu/caiu prêmio). Do lado do crescimento de prêmio, destacam-se **Stop Loss (0743)** (+2.455%), **Educacional (1380)** (+411%) e **RC Veículo Transporte Rodoviário de Carga (0659)** (+368%) — com a ressalva de que são ramos de nicho, com base de prêmio inicial pequena.
 
-📷 **[Espaço para imagem: gráfico "Crescimento de prêmio x variação de
-sinistralidade por ramo"]**
+<img src="imagens/pergunta3_tabela_cruzamento.png" alt="Tabela Cruzamento" width="800">
+
+<img src="imagens/pergunta3_grafico_cruzamento.png" alt="Gráfico Cruzamento" width="800">
 
 ### Extensão — Concentração por grupo econômico
 

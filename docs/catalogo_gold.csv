@@ -1,0 +1,66 @@
+﻿Nome da Tabela Gold,Nome do Campo Gold,Datatype Gold,Nome da Tabela Bronze,Nome do Campo Bronze,Chaves,Datatype Bronze,Descrição
+dim_tempo,id_tempo,int,(derivado),damesano,PK,int,Identificador do período no formato AAAAMM
+dim_tempo,data_referencia,date,bronze_ses_seguros / bronze_ses_uf,damesano,,int,Primeiro dia do mês de referência
+dim_tempo,ano,int,(derivado de data_referencia),-,,-,Ano de referência
+dim_tempo,mes,int,(derivado de data_referencia),-,,-,Mês de referência
+dim_tempo,trimestre,int,(derivado de data_referencia),-,,-,Trimestre de referência
+dim_empresa,codigo_empresa,string,bronze_ses_cias,Coenti,PK,int,Código da Empresa
+dim_empresa,nome_empresa,string,bronze_ses_cias,Noenti,,string,Nome da Empresa
+dim_ramo,codigo_ramo,string,bronze_ses_ramos,coramo,PK,int,Código do Ramo (segmento de seguro)
+dim_ramo,nome_ramo,string,bronze_ses_ramos,noramo,,string,Nome do Ramo
+dim_grupo_ramo,codigo_grupo_ramo,string,bronze_ses_gruposramos,GRACODIGO,PK,double,Código do grupamento de ramos
+dim_grupo_ramo,nome_grupo_ramo,string,bronze_ses_gruposramos,GRANOME,,string,Nome do Grupamento de Ramos
+fato_premios_sinistros,id_tempo,int,(derivado),damesano,FK -> dim_tempo,int,FK para dim_tempo
+fato_premios_sinistros,data_referencia,date,bronze_ses_seguros,damesano,,int,Data de referência do registro
+fato_premios_sinistros,codigo_empresa,string,bronze_ses_seguros,coenti,FK -> dim_empresa,int,FK para dim_empresa
+fato_premios_sinistros,codigo_ramo,string,bronze_ses_seguros,coramo,FK -> dim_ramo,int,FK para dim_ramo
+fato_premios_sinistros,codigo_grupo_economico,string,bronze_ses_grupos_economicos,cogrupo,,int,Código do grupo econômico da empresa no mês (histórico)
+fato_premios_sinistros,nome_grupo_economico,string,bronze_ses_grupos_economicos,nogrupo,,string,Nome do grupo econômico da empresa no mês
+fato_premios_sinistros,premio_direto,double,bronze_ses_seguros,premio_direto,,double,Prêmio Direto (R$)
+fato_premios_sinistros,premio_de_seguros,double,bronze_ses_seguros,premio_de_seguros,,double,Prêmio de Seguros (R$)
+fato_premios_sinistros,premio_retido,double,bronze_ses_seguros,premio_retido,,double,Prêmio Retido (R$)
+fato_premios_sinistros,premio_ganho,double,bronze_ses_seguros,premio_ganho,,double,Prêmio Ganho (R$)
+fato_premios_sinistros,sinistro_direto,double,bronze_ses_seguros,sinistro_direto,,double,Sinistro de Seguros (R$)
+fato_premios_sinistros,sinistro_retido,double,bronze_ses_seguros,sinistro_retido,,double,Sinistro Retido (R$)
+fato_premios_sinistros,desp_com,double,bronze_ses_seguros,desp_com,,double,Despesa Comercial (R$)
+fato_premios_sinistros,sinistralidade,double,(calculado),sinistro_retido / premio_ganho,,-,Sinistralidade líquida do registro; nula quando premio_ganho < R$ 1.000 (limite de materialidade)
+fato_premios_sinistros_uf,id_tempo,int,(derivado),damesano,FK -> dim_tempo,int,FK para dim_tempo
+fato_premios_sinistros_uf,data_referencia,date,bronze_ses_uf,damesano,,integer,Data de referência do registro
+fato_premios_sinistros_uf,codigo_empresa,string,bronze_ses_uf,coenti,FK -> dim_empresa,integer,FK para dim_empresa
+fato_premios_sinistros_uf,codigo_ramo,string,bronze_ses_uf,ramos,FK -> dim_ramo,integer,FK para dim_ramo
+fato_premios_sinistros_uf,uf,string,bronze_ses_uf,UF,,string,Unidade Federativa
+fato_premios_sinistros_uf,codigo_grupo_ramo,string,bronze_ses_uf,gracodigo,FK -> dim_grupo_ramo,long,FK para dim_grupo_ramo (contém inconsistências na origem; ver Qualidade de Dados)
+fato_premios_sinistros_uf,premio_dir,double,bronze_ses_uf,premio_dir,,integer,Prêmios Diretos (R$)
+fato_premios_sinistros_uf,premio_ret,double,bronze_ses_uf,premio_ret,,string,Prêmios Retidos (R$)
+fato_premios_sinistros_uf,sin_dir,double,bronze_ses_uf,sin_dir,,string,Sinistros Diretos (R$)
+fato_premios_sinistros_uf,prem_ret_liq,double,bronze_ses_uf,prem_ret_liq,,string,Prêmios Retidos Líquidos (R$)
+fato_premios_sinistros_uf,salvados,double,bronze_ses_uf,salvados,,string,Salvados de sinistros (R$)
+fato_premios_sinistros_uf,recuperacao,double,bronze_ses_uf,recuperacao,,string,Recuperações (R$)
+fato_premios_sinistros_uf,sinistralidade_uf,double,(calculado),sin_dir / prem_ret_liq,,-,Sinistralidade por UF; nula quando prem_ret_liq < R$ 1.000 (limite de materialidade)
+gold_premios_por_ramo,codigo_ramo,string,dim_ramo,codigo_ramo,FK -> dim_ramo,string,FK para dim_ramo
+gold_premios_por_ramo,nome_ramo,string,dim_ramo,nome_ramo,,string,Nome do Ramo
+gold_premios_por_ramo,premio_direto_total,-,(calculado),SUM(fato_premios_sinistros.premio_direto),double, por ramo,Soma do Prêmio Direto no período
+gold_premios_por_ramo,premio_ganho_total,-,(calculado),SUM(fato_premios_sinistros.premio_ganho),double, por ramo,Soma do Prêmio Ganho no período
+gold_sinistralidade_por_periodo,ano,int,dim_tempo,ano,,int,Ano de referência
+gold_sinistralidade_por_periodo,mes,int,dim_tempo,mes,,int,Mês de referência
+gold_sinistralidade_por_periodo,sinistro_retido_total,double,(calculado),SUM(fato_premios_sinistros.sinistro_retido),,-,Soma do Sinistro Retido no mês (mercado total)
+gold_sinistralidade_por_periodo,premio_ganho_total,double,(calculado),SUM(fato_premios_sinistros.premio_ganho),,-,Soma do Prêmio Ganho no mês (mercado total)
+gold_sinistralidade_por_periodo,sinistralidade_media,double,(calculado),sinistro_retido_total / premio_ganho_total,,-,Sinistralidade média do mercado no mês
+gold_cruzamento_premio_sinistralidade,codigo_ramo,string,dim_ramo,codigo_ramo,FK -> dim_ramo,string,FK para dim_ramo
+gold_cruzamento_premio_sinistralidade,nome_ramo,string,dim_ramo,nome_ramo,,string,Nome do Ramo
+gold_cruzamento_premio_sinistralidade,inicio_premio,double,(calculado),SUM(premio_direto) no primeiro ano,,-,Prêmio Direto total no primeiro ano do período analisado
+gold_cruzamento_premio_sinistralidade,fim_premio,double,(calculado),SUM(premio_direto) no último ano,,-,Prêmio Direto total no último ano do período analisado
+gold_cruzamento_premio_sinistralidade,variacao_premio_pct,double,(calculado),(fim_premio - inicio_premio) / inicio_premio * 100,,-,Variação percentual do prêmio entre início e fim do período
+gold_cruzamento_premio_sinistralidade,inicio_sinistralidade,double,(calculado),sinistro_retido/premio_ganho no primeiro ano,,-,Sinistralidade no primeiro ano do período analisado
+gold_cruzamento_premio_sinistralidade,fim_sinistralidade,double,(calculado),sinistro_retido/premio_ganho no último ano,,-,Sinistralidade no último ano do período analisado
+gold_cruzamento_premio_sinistralidade,variacao_sinistralidade_pp,double,(calculado),(fim_sinistralidade - inicio_sinistralidade) * 100,,-,Variação em pontos percentuais da sinistralidade
+gold_cruzamento_premio_sinistralidade,classificacao,string,(calculado),regra de negócio (4 categorias),,-,Classificação do ramo por combinação de crescimento de prêmio x variação de sinistralidade
+gold_concentracao_grupo_economico,codigo_grupo_economico,string,bronze_ses_grupos_economicos,cogrupo,,int,Código do Grupo Econômico
+gold_concentracao_grupo_economico,nome_grupo_economico,string,bronze_ses_grupos_economicos,nogrupo,,string,Nome do Grupo Econômico
+gold_concentracao_grupo_economico,premio_direto_total,-,(calculado),SUM(fato_premios_sinistros.premio_direto),double, por grupo econômico,Soma do Prêmio Direto no período
+gold_concentracao_grupo_economico,participacao_pct,double,(calculado),premio_direto_total / total_mercado * 100,,-,Participação percentual do grupo econômico no total de prêmios do mercado
+gold_premios_sinistros_por_uf,uf,string,bronze_ses_uf,UF,PK (nesta tabela agregada),string,Unidade Federativa
+gold_premios_sinistros_por_uf,premio_direto_total,-,(calculado),SUM(fato_premios_sinistros_uf.premio_dir),double, por UF,Soma do Prêmio Direto no período
+gold_premios_sinistros_por_uf,sinistro_direto_total,-,(calculado),SUM(fato_premios_sinistros_uf.sin_dir),double, por UF,Soma do Sinistro Direto no período
+gold_premios_sinistros_por_uf,premio_retido_liquido_total,-,(calculado),SUM(fato_premios_sinistros_uf.prem_ret_liq),double, por UF,Soma do Prêmio Retido Líquido no período
+gold_premios_sinistros_por_uf,sinistralidade_uf,double,(calculado),sinistro_direto_total / premio_retido_liquido_total,,-,Sinistralidade média por UF no período

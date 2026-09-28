@@ -1,0 +1,162 @@
+coramo;noramo
+0655      ;0655 -  RC Trans Desaparec Carga RC-DC
+0656      ;0656 - R.C. Trans. Aquaviário Carga–RCA-C
+0457      ;0457 - D. P. E. M.(RUN OFF)
+1457      ;1457 - DPEM
+0658      ;0658 - R.C.Operador Transp. Multi.-RCOTM-C
+0659      ;0659 - RC Veículo Transp Rod Carga RC-V
+0859      ;0859 - Crédito à Expor Risc Polít(RUN OFF)
+0860      ;0860 - Crédito Dom Risco Comerc(RUN OFF)
+1061      ;1061 - Seg.Habit.Apól. Merc. - Prestamista
+1161      ;1161 - Agrícola
+1162      ;1162 - Penhor Rural
+1163      ;1163 - Penhor Rural Inst. Fin Pub(RUN OFF)
+1164      ;1164 - Seguros Animais
+1065      ;1065 - Seg.Habit.Apól.Merc.-Demais Cobert.
+1165      ;1165 - Compreensivo de Florestas
+1066      ;1066 - Seg.Hab.Sist.Fin. da Habit(RUN OFF)
+0167      ;0167 - Riscos de Engenharia
+1068      ;1068 - HABITACIONAL - FORA DO SFH(RUN OFF)
+0969      ;0969 -  Viagem
+1369      ;1369 - Viagem
+0870      ;0870 - Crédito Dom Risco P.Físic (RUN OFF)
+0171      ;0171 - Riscos Diversos
+0272      ;0272 - RISCOS NUCLEARES(RUN OFF)
+1872      ;1872 - Riscos Nucleares
+0173      ;0173 - Global de Bancos
+0274      ;0274 - SATÉLITES(RUN OFF)
+1574      ;1574 - Satélites
+0775      ;0775 - Garantia Segurado - Setor Público
+0176      ;0176 - Riscos Diversos - Planos Conjugados
+0776      ;0776 - Garantia Segurado - Setor Privado
+0977      ;0977 - Prestamista (exceto Habit e Rural)
+1377      ;1377 - Prestamista (exceto Habit. E Rural)
+0378      ;0378 - R. C.  Profissional
+1279      ;1279 - Seguros no Exterior(RUN OFF)
+2079      ;2079 - Aceitações do Exterior
+0980      ;0980 -  Educacional
+1380      ;1380 - Educacional
+0981      ;0981 - ACIDENTES PESS - INDIVID(RUN OFF)
+1381      ;1381 - Acidentes Pessoais
+0982      ;0982 - Acidentes Pessoais
+0583      ;0583 - DPVAT Extinto
+0983      ;0983  - Dotal Misto
+1383      ;1383 - Dotal Misto
+0484      ;0484 - Aeronáuticos - Bilhete
+0984      ;0984  - Doenças Graves ou Doença Terminal
+1384      ;1384 - Doenças Graves ou Doença Terminal
+1285      ;1285 - Saúde - Ressegurador Loc (RUN OFF)
+1985      ;1985 - Saúde – Resseguro
+0986      ;0986  - Dotal Puro
+1286      ;1286 - Saúde Individual
+1386      ;1386 - Dotal Puro
+0987      ;0987 - Desemprego/Perda de Renda
+1287      ;1287 - Saúde Grupal
+1387      ;1387 - Desemprego/Perda de Renda
+0588      ;0588 - DPVAT
+0589      ;0589 - DPVAT( RUN OFF)
+0990      ;0990 -  Eventos Aleatórios
+1390      ;1390 - Eventos Aleatórios
+0991      ;0991 -  Vida(RUN OFF)
+1391      ;1391 - Vida
+0992      ;0992 - VGBL/VAGP/VRGP/VRSA/PRI ind(RUN OFF
+1392      ;1392 - VGBL/ VAGP/ VRGP/ VRSA/ VRID/ VDR
+0993      ;0993 - Vida em Grupo
+2293      ;2293 - VIDA EFPC
+0994      ;0994 - VGBL/ VAGP/ VRGP/ VRSA/ VRID/ VDR
+0195      ;0195 - Garantia Est./Ext.Gar-Bens em Geral
+0196      ;0196 - Riscos Nomeados e Operacionais
+0996      ;0996 - Seguro de Vida Universal
+1396      ;1396 - Seguro de Vida Universal
+0997      ;0997 - VG/APC
+1597      ;1597 - Resp. Explor. ou Transp. Aéreo-RETA
+1198      ;1198 - Seguro de Vida do Produtor Rural
+1299      ;1299 - SUCURSAIS NO EXTERIOR(RUN OFF)
+2199      ;2199 - SUCURSAL NO EXTERIOR
+1101      ;1101 - Seguro Agr sem cob do FESR(RUN OFF)
+1601      ;1601 - Microsseguros de Pessoas
+2201      ;2201 - Sobrevivência de Assistido
+1102      ;1102 - Seguro Agr com cob do FESR(RUN OFF)
+1602      ;1602 - Microsseguros de Danos
+2202      ;2202 - Fluxo Biométrico
+1103      ;1103 - Seguro Pec sem cob do FESR(RUN OFF)
+1603      ;1603 - Microsseguros - Previdência
+2203      ;2203 - Índice Biométrico
+1104      ;1104 - Seguro Pec com cob do FESR(RUN OFF)
+1105      ;1105 - Seguro Aq sem cob do FESR(RUN OFF)
+1106      ;1106 - Seguro Aq com cob do FESR(RUN OFF)
+1107      ;1107 - Seguro Flore s/cob do FESR(RUN OFF)
+1108      ;1108 - Seguro Flore c coB do FESR(RUN OFF)
+1109      ;1109 - Seguro da Céd do Pr Rural(RUN OFF)
+0310      ;0310 - R.C.Administradores e Diretores-D&O
+0111      ;0111 - INCÊNDIO TRADICIONAL(RUN OFF)
+0711      ;0711 - Riscos Diversos Financeiros
+1111      ;1111 - Seguro Agrícola
+0112      ;0112 - Assistência - Bens em Geral
+1112      ;1112 - Seguro Pecuário
+0113      ;0113 - Vidros
+0313      ;0313 - R. C. Riscos Ambientais
+1113      ;1113 - Seguro Aquícola
+0114      ;0114 - Compreensivo Residencial
+1114      ;1114 - Seguro Florestas
+0115      ;0115 - ROUBO(RUN OFF)
+0116      ;0116 - Compreensivo Condomínio
+0117      ;0117 - Tumultos
+1417      ;1417 - Seg. Compreensivo Oper. Portuários
+0118      ;0118 - Compreensivo Empresarial
+0819      ;0819 - Crédito à Exp. Risco Comer(RUN OFF)
+0520      ;0520 - Acidentes Pessoais Passageiros-APP
+0621      ;0621 - Transporte Nacional
+0622      ;0622 - Transporte Internacional
+0523      ;0523 - RC T.ROD.PAS INTEST OU INT(RUN OFF)
+0623      ;0623 - RCTR-P Interestadual/Internacional
+0524      ;0524 - Garantia Est./ Exten. Garantia–Auto
+0525      ;0525 - Carta Verde
+0526      ;0526 - Seguro Popular de Auto Us (RUN OFF)
+0327      ;0327 - Compreensivo Riscos Cibernéticos
+0527      ;0527 - RC Veic Pass Acordos fora Mercosul
+0627      ;0627 - Resp. Civil do Transp.Intm(RUN OFF)
+0628      ;0628 - RCTR-P Municipal/Intermunicipal
+1128      ;1128 - Pecuário
+1428      ;1428 - R. C. Facult. para Embarcações-RCF
+1528      ;1528 - R. C. Facult. para Aeronaves - RCF
+0929      ;0929 - Funeral
+1129      ;1129 - Aquícola
+1329      ;1329 - Funeral
+1130      ;1130 - Seguro Benf. e Prod. Agropecuários
+0531      ;0531 - Automóvel - Casco
+0632      ;0632 - R.C.Trans.Carga Viag.Int.-RCTR-VI-C
+0433      ;0433 -  Marítimos(RUN OFF)
+1433      ;1433 - Marítimos (Cascos)
+0234      ;0234 - RISCOS DE PETRÓLEO(RUN OFF)
+1734      ;1734 - Riscos de Petróleo
+0435      ;0435 - AERONÁUTICOS(RUN OFF)
+1535      ;1535 - Aeronáuticos (cascos)
+0936      ;0936 - Perda Certif. Habilit. de Vôo-PCHV
+1336      ;1336 - Perda Certif. Habilit. de Vôo-PCHV
+0437      ;0437  - RESPONSAB CIVIL HANGAR(RUN OFF)
+1537      ;1537 - Responsabilidade Civil Hangar
+0638      ;0638 - R.C.Trans. Ferroviário Carga–RCTF-C
+0739      ;0739 - Garantia Financeira(RUN OFF)
+0740      ;0740 - Garantia de Obrigaçõe Priv(RUN OFF)
+0141      ;0141 - Lucros Cessantes
+0142      ;0142 - Lucros Cessantes Cobertura Simples
+0542      ;0542 - Assistência e Outras Cobert. - Auto
+0143      ;0143 - Fidelidade
+0743      ;0743 - Stop Loss
+0544      ;0544 - R.C.T.Viag InterPes Tran/ñ(RUN OFF)
+0644      ;0644 - R.C. Viag.Int. Pessoas - Carta Azul
+0645      ;0645 - RC Transp Intern fora do ATIT
+0745      ;0745 - Garantia de Obrig Públicas(RUN OFF)
+0746      ;0746 - Fiança Locatícia
+0747      ;0747 - Garantia de Conc Públicas (RUN OFF)
+0748      ;0748 - Crédito Interno
+0848      ;0848 - Crédito Interno
+0749      ;0749 - Crédito à Exportação
+0849      ;0849 - Crédito à Exportação
+0949      ;0949 - Crédito à Exportação
+0750      ;0750 - Garantia Judicial(RUN OFF)
+0351      ;0351 - R. C. Geral
+0652      ;0652 - R. C. Trans. Aéreo Carga - RCTA-C
+0553      ;0553 - R. C. Facultativa Veículos - RCFV
+0654      ;0654 - R.C. Trans. Rodoviário Carga–RCTR-C
