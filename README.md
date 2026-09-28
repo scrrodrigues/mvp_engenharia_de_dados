@@ -194,8 +194,6 @@ Durante o desenvolvimento, identificamos que os campos `sinistro_retido` e/ou `p
 2. **Evita introduzir viés.** Qualquer valor estimado para substituir o zero/nulo seria uma suposição sem base técnica — mantê-lo como está é mais correto do que "inventar" um número.
 3. **É mais transparente.** Documentar a limitação abertamente (aqui e no notebook `04`) permite que qualquer pessoa lendo a análise saiba exatamente o que o dado permite e não permite concluir — em vez de uma correção silenciosa que esconderia o problema.
 
-📷 **[qualidade de dados]**
-
 ---
 
 ## 8. Análise de Dados (Etapa 4.5)
@@ -234,15 +232,9 @@ Pela mesma limitação, a variação de sinistralidade fica achatada em zero par
 
 Os 5 maiores grupos somam **59,0%** do total de prêmios. As duas maiores categorias — "Outros Grupos" (16,5%) e "Independente" (15,3%) — são rótulos agregados da própria base, não conglomerados únicos. Entre os grupos nomeados individualmente, **Porto Seguro** (11,3%), **BB Mapfre** (~8,4%) e **Bradesco** (~7,3%) lideram, coerente com o domínio histórico de grandes seguradoras ligadas a bancos de varejo no Brasil.
 
-📷 **[Espaço para imagem: gráfico "Top 10 grupos econômicos por
-participação de mercado"]**
-
 ### Extensão — Análise geográfica (UF)
 
 **São Paulo** lidera disparado em volume de prêmio, seguido por RJ, MG, RS e PR — acompanhando o peso econômico de cada estado. Já em sinistralidade, quem lidera é o **Acre** (~500%), muito acima de qualquer estado do top 10 de volume — nenhum dos líderes em arrecadação aparece no topo da sinistralidade. Isso confirma que existem estados de alto volume e sinistralidade controlada (caso de SP) e estados de baixo volume com sinistralidade desproporcional (caso do AC) — sendo este último efeito provavelmente amplificado pela base de prêmio pequena, que torna a métrica mais volátil.
-
-📷 **[Espaço para imagem: gráficos "Top 10 UFs por volume de prêmio" e "Top
-10 UFs por sinistralidade"]**
 
 ### Discussão geral — conectando tudo à pergunta principal
 
